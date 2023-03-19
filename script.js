@@ -1,5 +1,5 @@
 // Replace YOUR_API_KEY with your OpenAI API key
-const apiKey = 'YOUR_API_KEY';
+const apiKey = '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';
 const apiUrl = 'https://api.openai.com/v1/engines/davinci-codex/completions';
 
 async function generateAnswer() {
