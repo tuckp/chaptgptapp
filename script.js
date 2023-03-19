@@ -1,27 +1,29 @@
-const chatOutput = document.getElementById('chat-output');
-const chatInput = document.getElementById('chat-input');
+// Replace YOUR_API_KEY with your OpenAI API key
+const apiKey = 'YOUR_API_KEY';
+const apiUrl = 'https://api.openai.com/v1/engines/davinci-codex/completions';
 
-function sendChat() {
-  const userText = chatInput.value;
-  chatOutput.innerHTML += `<p>You: ${userText}</p>`;
-  chatInput.value = '';
+async function generateAnswer() {
+  const question = document.getElementById('question').value;
+  const prompt = `Q: ${question}\nA:`;
 
-  // send userText to server and get response
-  fetch('/api/chat', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ text: userText })
-  })
-  .then(response => response.json())
-  .then(data => {
-    chatOutput.innerHTML += `<p>ChatGPT: ${data.text}</p>`;
-  });
-}
-
-chatInput.addEventListener('keydown', event => {
-  if (event.key === 'Enter') {
-    sendChat();
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        'prompt': prompt,
+        'max_tokens': 100,
+        'temperature': 0.7,
+        'stop': ['\n']
+      })
+    });
+    const data = await response.json();
+    const answer = data.choices[0].text.trim();
+    document.getElementById('answer').textContent = answer;
+  } catch (error) {
+    console.error(error);
   }
-});
+}
