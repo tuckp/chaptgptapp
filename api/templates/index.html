@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <!-- Mobile scale -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <h1>Chatbot</h1>
+    <div id="chatbox">
+        <div id="chatlog">
+            <div id="chatlog-content">
+                <div class="chatlog-entry">
+                    <div class="chatlog-entry-user">User</div>
+                    <div class="chatlog-entry-bot">Bot</div>
+                </div>
+            </div>
+        </div>
+        <div id="chatinput">
+
+            <input type="text" id="chatinput-text" placeholder="Type a message..." />
+            <button id="chatinput-button">Send</button>
+        </div>
+    </div>
+    <script>
+        var context = []
+        var chatlog = document.getElementById('chatlog-content');
+        var chatinput = document.getElementById('chatinput-text');
+        var chatbutton = document.getElementById('chatinput-button');
+
+        chatbutton.addEventListener('click', async function () {
+            var user = chatinput.value;
+            chatinput.value = '';
+
+            var entry = document.createElement('div');
+            entry.classList.add('chatlog-entry');
+
+            var userdiv = document.createElement('div');
+            userdiv.classList.add('chatlog-entry-user');
+            userdiv.innerHTML = user;
+
+            var botdiv = document.createElement('div');
+            botdiv.classList.add('chatlog-entry-bot');
+            botdiv.innerHTML = 'Thinking...';
+
+            entry.appendChild(userdiv);
+            entry.appendChild(botdiv);
+            chatlog.appendChild(entry);
+
+            var data = {
+                "query": user,
+                "context": context
+            }
+            const response = await fetch('/chat', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            })
+            const json = await response.json();
+
+            botdiv.innerHTML = json.response;
+            context = json.context;
+        });
+    </script>
+</body>
+
+</html>
